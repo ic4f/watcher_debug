@@ -4,7 +4,13 @@ import threading
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 from flask import Flask
+from uwsgidecorators import postfork
 
+
+
+@postfork
+def reload():
+    print('reloading postfork')
 
 
 class MyEventHandler(FileSystemEventHandler):
