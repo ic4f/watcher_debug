@@ -6,10 +6,11 @@ from uwsgidecorators import postfork
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 
-
 print('\tXXXXX top; pid=%d' % os.getpid())
 
-FOO = 42
+@postfork
+def reload():
+    print('reloading postfork')
 
 def app(env, start_response):
     print('\tXXXXX app(); pid=%d' % os.getpid())
