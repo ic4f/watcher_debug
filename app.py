@@ -8,33 +8,18 @@ from watchdog.events import FileSystemEventHandler
 
 print('\tXXXXX top; pid=%d' % os.getpid())
 
-@postfork
-def reload():
-    print('reloading postfork')
 
 def app(env, start_response):
     print('\tXXXXX app(); pid=%d' % os.getpid())
     start_response('200 OK', [('Content-Type','text/html')])
     return [b"Hello World, " + str(FOO)]
 
-def launch_thread_watcher():
-    print('\tXXXXX launch_thread_watcher(); pid=%d' % os.getpid())
-    thread = threading.Thread(target=watch)
-    thread.start()
-
-def watch():
-    path = '/Users/sergey/0dev/watcher_debug/app2/to_watch'
-    event_handler = MyFileSystemEventHandler()
-    observer = Observer()
-    observer.schedule(event_handler, path, recursive=True)
-    observer.start()
-
 class MyFileSystemEventHandler(FileSystemEventHandler):
     def on_any_event(self, event):
-        print('\tXXXXX on_any_event(); pid=%d' % os.getpid())
+        print('\tHANDLE event; pid=%d' % os.getpid())
         my_number = get_number()
         FOO = my_number
-        print('Handling event: my_number is now %s' % my_number)
+        #print('Handling event: my_number is now %s\n' % my_number)
 
 def get_number():
     with open('to_watch/number.txt') as f:
@@ -42,8 +27,31 @@ def get_number():
 
 @postfork
 def launch_postfork():
+#    launch_thread_watcher()
     print('\tXXXXX launching postfork pid=%d' % os.getpid())
-    launch_thread_watcher()
+    path = '/home/sergey/0dev/galaxy/watcher_debug/to_watch'
+    event_handler = MyFileSystemEventHandler()
+    observer = Observer()
+    observer.schedule(event_handler, path, recursive=True)
+    observer.start()
+
+
+
+
+
+#def launch_thread_watcher():
+#    print('\tXXXXX launch_thread_watcher(); pid=%d' % os.getpid())
+#    thread = threading.Thread(target=watch)
+#    thread.start()
+#
+#def watch():
+#    #path = '/Users/sergey/0dev/watcher_debug/app2/to_watch'
+#    path = '/home/sergey/0dev/galaxy/watcher_debug/to_watch'
+#    event_handler = MyFileSystemEventHandler()
+#    observer = Observer()
+#    observer.schedule(event_handler, path, recursive=True)
+#    observer.start()
+
 
 
 #def launch_thread_clock():
